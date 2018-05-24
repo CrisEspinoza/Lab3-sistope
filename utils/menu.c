@@ -1,17 +1,18 @@
 #include <stdio.h>
 
-# include "imagelib.c"
+# include "../src/functions.h"
+# include "../src/functions.c"
 
 // EL menu de la aplicación que se le muestra al usuario para que realice las funcionalidades del laboratorio
 
-void menu(int quantityImages,int umbralImages,int umbralClassification,int flag)
+void menu(int quantityImages,int quantityThread,int umbralImages,int umbralClassification,int flag)
 {
 
     int opcion;
 
     do
     {
-        printf( "\n   1. Comenzar pipeline");
+        printf( "\n   1. Comenzar programa");
         printf( "\n   2. Creditos" );
         printf( "\n   3. Salir" );
         printf( "\n\n   Introduzca opcion (1-3): ");
@@ -22,7 +23,7 @@ void menu(int quantityImages,int umbralImages,int umbralClassification,int flag)
 
         switch ( opcion )
         {
-            case 1: pipeline(quantityImages,flag,umbralClassification,umbralImages);
+            case 1: pipeline(quantityImages,flag,umbralClassification,umbralImages,quantityThread);
                     break;
 
             case 2: printf(" * Autor: Javier Arrendondo && Cristian Espinoza \n ");

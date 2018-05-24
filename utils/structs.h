@@ -1,7 +1,11 @@
 # include <stdlib.h>
+#include <pthread.h>
 
 #ifndef _STRUCTS_H_
 #define _STRUCTS_H_
+
+// Cabecera de menu
+void menu(int quantityImages,int quantityThread,int umbralImages,int umbralClassification,int flag);
 
 //Tenemos declaradas todas las estructuras que se ocupan dentro del programa 
 
@@ -41,5 +45,18 @@ typedef struct Image
 	Pixel** matrix;
 	InfoHeader header;
 } Image;
+
+typedef struct Position{
+    int row;
+    int endrow;
+}Position;
+
+typedef struct Thread
+{
+	pthread_barrier_t* barrer;
+    Position* positions;
+   	int pos;
+   	pthread_t thread;
+}Thread;
 
 #endif
