@@ -8,7 +8,7 @@
 
 int isBMP(FILE* myFile, InfoHeader infoh);
 InfoHeader readInfoHeader(FILE* myFile);
-void binToBmp(char* image, Image* myImage);
+void binToBmp(int image, Image* myImage);
 
 
 #endif

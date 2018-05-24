@@ -4,6 +4,8 @@
 # include "../utils/structs.h"
 # include "../utils/bmplib.c"
 
+#include <pthread.h>
+
 /*
 Entrada: Enteros que representan la anchura y altura de la imagen.
 Descripción: Reserva memoria para la representación de una imagen.
@@ -86,7 +88,7 @@ Image* readImg(char* name)
 	strcat(route, name);
     strcat(route, ".bmp");
     Image* img = open(route);
-    printf("Termine de leer la imagen \n");
+    //printf("Termine de leer la imagen \n");
 	return img;
 }
 
@@ -95,18 +97,23 @@ Entrada: Entra una imagen
 Descripción: Convierto los componentes de la imagen a escala de grises 
 Salida: Imagen en escala de grises
 */
-Image* convertToGray(Image* myImage)
+Image* convertToGray(Image* myImage, int inicio, int final)
 {
 	int tmp, i, j;
-	for (i = 0; i < myImage->height; i++)
-		for (j = 0; j < myImage->width; j++)
-		{
-			// Y = R ∗ 0.3 + G ∗ 0.59 + B ∗ 0.11
-			tmp = myImage->matrix[i][j].red * 0.3 + myImage->matrix[i][j].green * 0.59 + myImage->matrix[i][j].blue * 0.11;
-			myImage->matrix[i][j].red = tmp;
-			myImage->matrix[i][j].green = tmp;
-			myImage->matrix[i][j].blue = tmp;
-		}
+	if (inicio != -1 )
+	{
+		//printf("entre aca: %d \n", inicio );
+		for (i = inicio; i <= final; i++)
+			for (j = 0; j < myImage->width; j++)
+			{
+				//printf("Entre aca \n");
+				// Y = R ∗ 0.3 + G ∗ 0.59 + B ∗ 0.11
+				tmp = myImage->matrix[i][j].red * 0.3 + myImage->matrix[i][j].green * 0.59 + myImage->matrix[i][j].blue * 0.11;
+				myImage->matrix[i][j].red = tmp;
+				myImage->matrix[i][j].green = tmp;
+				myImage->matrix[i][j].blue = tmp;
+			}
+	}
 	return myImage;
 }
 
@@ -115,64 +122,29 @@ Entrada: Entra el umbral ingresado por pantalla y una imagen
 Descripción: Convierte los pixeles segun una clasificación ingresada por pantalla y revisa si le corresponde 0 o 255
 Salida: Entraga la imagen con sus pixeles modificados
 */
-Image* convertToBin (int umbral, Image* myImage,int row , int col)
+Image* convertToBin (int umbral, Image* myImage, int inicio, int final)
 {
-
 	int i,j;
-	for (i = 0; i < myImage->height; i++)
+	if (inicio != -1)
 	{
-		for (j = 0; j < myImage->width; j++)
+		for (i = inicio; i <= final; i++)
 		{
-			if (myImage->matrix[i][j].red > umbral)
+			for (j = 0; j < myImage->width; j++)
 			{
-				myImage->matrix[i][j].red = 255;
-				myImage->matrix[i][j].blue = 255;
-				myImage->matrix[i][j].green = 255;
-			}
-			else
-			{
-				myImage->matrix[i][j].red = 0;
-				myImage->matrix[i][j].blue = 0;
-				myImage->matrix[i][j].green = 0;
+				if (myImage->matrix[i][j].red > umbral)
+				{
+					myImage->matrix[i][j].red = 255;
+					myImage->matrix[i][j].blue = 255;
+					myImage->matrix[i][j].green = 255;
+				}
+				else
+				{
+					myImage->matrix[i][j].red = 0;
+					myImage->matrix[i][j].blue = 0;
+					myImage->matrix[i][j].green = 0;
+				}
 			}
 		}
 	}
 	return myImage;
-}
-
-/*4. Análisis de propiedad
-
-Entrada: Recibe como parametro un umbral y una imagen 
-Descripción: EL umbral indica cuanto pocentaje de la imagen debe tener para ser clasificada nearly black y esta es evaluada en la imagen
-Salida: -
-*/
-void classification (int umbral ,Image* myImage) 
-{
-	//1 = negro
-	int black = 0;
-	int i,j,percentage;
-	for (i = 0; i < myImage->height; i++)
-		for (j = 0; j < myImage->width; j++)
-		{
-			if (myImage->matrix[i][j].red == 255)
-				black++;
-		}
-	percentage = (black * 100)/(myImage->height * myImage->width); 
-	if(percentage >= umbral)
-		myImage->isNearlyBlack = 1;
-	else
-		myImage->isNearlyBlack = 0;	
-}
-
-/* 5. Escritura de resultados
-Entrada: Recibe una bandera y una imagen y por ultimo el numero de la imagen
-Descripción: Escribe el resultado de la imagen si es considerada nearly black, ademas escribe la imagen en formato creado anteriormente
-Salida: -
-*/
-void response(char* image, Image* myImage, char* flag)
-{
-	if(myImage->isNearlyBlack == 1 && !strcmp(flag, "1"))
-		printf("|  imagen_%s   |         yes       |\n", image);
-	else 
-		printf("|  imagen_%s   |         no        |\n", image);
 }
